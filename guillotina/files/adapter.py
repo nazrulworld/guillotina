@@ -47,12 +47,15 @@ class DBDataManager:
 
     @property
     def content_type(self):
-        return self._file.guess_content_type()
+        if not self._file.content_type:
+            return self._file.guess_content_type()
+        return self._file.content_type
 
     @property
     def size(self):
         if self._file.size:
             return self._file.size
+        return 0
 
     @property
     def file(self):
