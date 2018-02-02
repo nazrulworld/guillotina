@@ -1,5 +1,8 @@
-2.3.18 (unreleased)
--------------------
+2.4.0 (unreleased)
+------------------
+
+- normalize file manager api so we can have more simple integrations with s3/gcloud
+  [vangheem]
 
 - Use __slots__ for BaseObject
   [vangheem]
