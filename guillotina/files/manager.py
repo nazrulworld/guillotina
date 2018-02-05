@@ -120,6 +120,7 @@ class CloudFileManager(object):
 
         if self.dm.get_offset() >= self.dm.get('size'):
             await self.file_storage_manager.finish(self.dm)
+            await self.dm.finish()
 
         resp = Response(headers={
             'Upload-Offset': str(self.dm.get_offset()),
@@ -221,6 +222,7 @@ class CloudFileManager(object):
             data = await read_request_data(self.request, CHUNK_SIZE)
 
         await self.file_storage_manager.finish(self.dm)
+        await self.dm.finish()
 
     async def iter_data(self, *args, **kwargs):
         async for chunk in self.file_storage_manager.iter_data(self.dm):
@@ -232,6 +234,7 @@ class CloudFileManager(object):
         async for data in generator():
             await self.file_storage_manager.append(self.dm, data)
         await self.file_storage_manager.finish(self.dm)
+        await self.dm.finish()
 
     async def copy(self, other_manager):
         await self.dm.load()
@@ -239,3 +242,4 @@ class CloudFileManager(object):
         await other_manager.file_storage_manager.start(other_manager.dm)
         await self.file_storage_manager.copy(
             self.dm, other_manager.file_storage_manager, other_manager.dm)
+        await other_manager.dm.finish()

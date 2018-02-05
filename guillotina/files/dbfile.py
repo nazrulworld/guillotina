@@ -15,13 +15,3 @@ class DBFile(BaseCloudFile):
 
     def get_actual_size(self):
         return self._blob.size
-
-    @property
-    def size(self):
-        if self._blob is not None:
-            return self._blob.size
-        return 0
-
-    @size.setter
-    def size(self, val):
-        pass

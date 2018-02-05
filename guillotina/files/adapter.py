@@ -45,6 +45,9 @@ class DBDataManager:
         except AttributeError:
             self.field.context._p_register()
 
+    async def finish(self):
+        pass
+
     @property
     def content_type(self):
         if not self._file.content_type:
@@ -62,7 +65,7 @@ class DBDataManager:
         return self._file
 
     def get_offset(self):
-        return self._file.current_upload
+        return self._file.get_actual_size()
 
     def get(self, name, default=None):
         return getattr(self._file, name, default)
