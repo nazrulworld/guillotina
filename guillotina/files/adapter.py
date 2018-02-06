@@ -84,13 +84,13 @@ class DBFileStorageManagerAdapter:
         self.field = field
 
     async def start(self, dm):
-        await dm.save()
         await dm.update(current_upload=0)
         if dm._file._blob is not None:
             bfile = dm._file._blob.open('r')
             await bfile.async_del()
         blob = Blob(dm.context)
         dm._file._blob = blob
+        await dm.save()
 
     async def iter_data(self, dm):
         bfile = dm._file._blob.open()
