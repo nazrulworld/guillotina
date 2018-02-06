@@ -105,10 +105,15 @@ class CloudFileManager(object):
         else:
             raise AttributeError('No upload-offset header')
 
+        if current_upload != self.dm.get('current_upload'):
+            raise AttributeError('Current upload does not match offset')
+
         self.request._last_read_pos = 0
         data = await read_request_data(self.request, to_upload)
 
+        count = 0
         while data:
+            count += len(data)
             await self.file_storage_manager.append(self.dm, data)
             data = await read_request_data(self.request, CHUNK_SIZE)
 
@@ -116,7 +121,7 @@ class CloudFileManager(object):
         expiration = resumable_uri_date + timedelta(days=1)
         await self.dm.update(
             resumable_uri_date=expiration,
-            current_upload=current_upload)
+            current_upload=current_upload + count)
 
         if self.dm.get_offset() >= self.dm.get('size'):
             await self.file_storage_manager.finish(self.dm)
@@ -155,13 +160,15 @@ class CloudFileManager(object):
         if 'TUS-RESUMABLE' not in self.request.headers:
             raise AttributeError('TUS needs a TUS version')
 
-        if 'X-UPLOAD-FILENAME' not in self.request.headers:
+        if 'X-UPLOAD-FILENAME' in self.request.headers:
             filename = self.request.headers['X-UPLOAD-FILENAME']
         elif 'UPLOAD-METADATA' not in self.request.headers:
             filename = uuid.uuid4().hex
         else:
             filename = self.request.headers['UPLOAD-METADATA']
             filename = base64.b64decode(filename.split()[1]).decode('utf-8')
+        if extension is None and '.' in filename:
+            extension = filename.split('.')[-1]
 
         resumable_uri_date = datetime.now(tz=tzutc())
         await self.dm.update(
