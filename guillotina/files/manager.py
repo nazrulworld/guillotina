@@ -155,7 +155,9 @@ class CloudFileManager(object):
         if 'TUS-RESUMABLE' not in self.request.headers:
             raise AttributeError('TUS needs a TUS version')
 
-        if 'UPLOAD-METADATA' not in self.request.headers:
+        if 'X-UPLOAD-FILENAME' not in self.request.headers:
+            filename = self.request.headers['X-UPLOAD-FILENAME']
+        elif 'UPLOAD-METADATA' not in self.request.headers:
             filename = uuid.uuid4().hex
         else:
             filename = self.request.headers['UPLOAD-METADATA']
