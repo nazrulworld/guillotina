@@ -108,7 +108,7 @@ class DBFileStorageManagerAdapter:
     async def finish(self, dm):
         await dm.save()
 
-    async def copy(self, dm, other_storage_manager, other_dm):
-        async for chunk in other_storage_manager.iter_data(other_dm):
-            await other_storage_manager.append(other_dm, chunk)
-        await other_storage_manager.finish(other_dm)
+    async def copy(self, dm, from_storage_manager, from_dm):
+        async for chunk in from_storage_manager.iter_data(from_dm):
+            await from_storage_manager.append(from_dm, chunk)
+        await from_storage_manager.finish(from_dm)

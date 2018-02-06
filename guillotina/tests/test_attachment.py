@@ -175,8 +175,8 @@ async def test_copy_file_ob(container_requester):
             cfm = get_multi_adapter(
                 (obj, request, IAttachment['file'].bind(attachment)), IFileManager
             )
-            other = get_multi_adapter(
+            from_cfm = get_multi_adapter(
                 (obj, request, IAttachment['file'].bind(attachment)), IFileManager
             )
-            await cfm.copy(other)
+            await cfm.copy(from_cfm)
             assert existing_bid != attachment.file._blob.bid

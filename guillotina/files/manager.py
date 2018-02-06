@@ -236,10 +236,10 @@ class CloudFileManager(object):
         await self.file_storage_manager.finish(self.dm)
         await self.dm.finish()
 
-    async def copy(self, other_manager):
+    async def copy(self, from_manager):
         await self.dm.load()
-        await other_manager.dm.load()
-        await other_manager.file_storage_manager.start(other_manager.dm)
+        await from_manager.dm.load()
+        await from_manager.file_storage_manager.start(from_manager.dm)
         await self.file_storage_manager.copy(
-            self.dm, other_manager.file_storage_manager, other_manager.dm)
-        await other_manager.dm.finish()
+            self.dm, from_manager.file_storage_manager, from_manager.dm)
+        await from_manager.dm.finish()
