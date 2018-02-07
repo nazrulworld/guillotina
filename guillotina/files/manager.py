@@ -240,11 +240,22 @@ class CloudFileManager(object):
         async for chunk in self.file_storage_manager.iter_data(self.dm):
             yield chunk
 
-    async def save_file(self, generator, *args, **kwargs):
+    async def save_file(self, generator, content_type=None, filename=None,
+                        extension=None):
         await self.dm.load()
+        await self.dm.update(
+            content_type=content_type,
+            filename=filename or uuid.uuid4().hex,
+            extension=extension
+        )
         await self.file_storage_manager.start(self.dm)
+        size = 0
         async for data in generator():
+            size += len(data)
             await self.file_storage_manager.append(self.dm, data)
+        await self.dm.update(
+            size=size
+        )
         await self.file_storage_manager.finish(self.dm)
         await self.dm.finish()
 
