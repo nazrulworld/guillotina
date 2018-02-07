@@ -162,6 +162,8 @@ class CloudFileManager(object):
 
         if 'X-UPLOAD-FILENAME' in self.request.headers:
             filename = self.request.headers['X-UPLOAD-FILENAME']
+        elif 'UPLOAD-FILENAME' in self.request.headers:
+            filename = self.request.headers['UPLOAD-FILENAME']
         elif 'UPLOAD-METADATA' not in self.request.headers:
             filename = uuid.uuid4().hex
         else:
@@ -172,6 +174,7 @@ class CloudFileManager(object):
 
         resumable_uri_date = datetime.now(tz=tzutc())
         await self.dm.update(
+            content_type=self.request.content_type,
             md5=md5,
             filename=filename,
             extension=extension,
